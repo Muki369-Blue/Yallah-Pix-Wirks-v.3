@@ -1,0 +1,31 @@
+<div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700 mb-8 animate-fade-in">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+    <div [class]="isKeyRequired() ? 'md:col-span-1' : 'md:col-span-3'">
+      <label for="apiProvider" class="block text-sm font-medium text-slate-300 mb-1">AI Provider</label>
+      <select id="apiProvider" [value]="currentProvider()" (change)="updateProvider($any($event.target).value)" class="w-full p-2 bg-slate-700 text-slate-200 rounded-lg border-2 border-slate-600 focus:border-sky-500 focus:ring-sky-500 transition-colors">
+        @for(p of providers(); track p.id) {
+          <option [value]="p.id">{{p.name}}</option>
+        }
+      </select>
+    </div>
+    @if (isKeyRequired()) {
+      <div class="md:col-span-2">
+        <label for="apiKey" class="block text-sm font-medium text-slate-300 mb-1">Your API Key</label>
+        <div class="flex gap-2">
+          <div class="relative flex-grow">
+            <input id="apiKey" type="password" [value]="currentKey()" (input)="currentKey.set($any($event.target).value); keyStatus.set('unverified')" placeholder="Enter key for your selected provider" class="w-full p-2 pr-8 bg-slate-700 text-slate-200 rounded-lg border-2 border-slate-600 focus:border-sky-500" />
+             @switch (keyStatus()) {
+                @case ('valid') { <span class="absolute top-1/2 right-3 -translate-y-1/2 text-green-400">✓</span> }
+                @case ('invalid') { <span class="absolute top-1/2 right-3 -translate-y-1/2 text-red-400">✗</span> }
+                @case ('verifying') { <div class="absolute top-1/2 right-3 -translate-y-1/2 w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div> }
+             }
+          </div>
+          <button (click)="handleSave()" class="px-4 py-2 bg-sky-600 text-white font-bold rounded-lg hover:bg-sky-700 transition-colors">Save</button>
+        </div>
+      </div>
+    }
+  </div>
+  @if (selectedProviderInfo(); as info) {
+    <p class="text-xs text-sky-400 mt-2 text-center">ⓘ {{ info.description }}</p>
+  }
+</div>

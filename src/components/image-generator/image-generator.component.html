@@ -1,0 +1,103 @@
+<div class="animate-fade-in">
+  <div class="bg-slate-800/50 p-6 rounded-2xl shadow-lg border border-slate-700 mb-8 space-y-6">
+    <!-- Song Title Concepts -->
+    <div>
+      <label for="songTitle" class="block text-sm font-medium text-slate-300 mb-2">1. Generate Ideas from a Song Title (Optional)</label>
+      <div class="flex flex-col sm:flex-row gap-2">
+        <input id="songTitle" type="text" [value]="songTitle()" (input)="songTitle.set($any($event.target).value)" placeholder="e.g., Midnight Drive, Concrete Jungle" class="flex-grow p-3 bg-slate-700 text-slate-200 rounded-lg border-2 border-slate-600 focus:border-blue-500 transition-colors" />
+        <button (click)="generateConcepts()" class="flex items-center justify-center gap-2 px-4 py-3 bg-sky-600 text-white font-bold rounded-lg hover:bg-sky-700 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-yellow-300"><path d="M12 2l2.35 7.16h7.65l-6.18 4.44 2.36 7.16-6.18-4.44-6.18 4.44 2.36-7.16-6.18-4.44h7.65z"/></svg>
+          Generate Concepts
+        </button>
+      </div>
+    </div>
+    <div class="border-t border-slate-700"></div>
+    <!-- Main Prompt -->
+    <div>
+      <div class="flex justify-between items-center mb-2">
+        <label for="mainPrompt" class="block text-sm font-medium text-slate-300">2. Describe Your Vision</label>
+        <button (click)="getSurprisePrompt()" class="text-sm text-sky-400 hover:text-sky-300 font-semibold">Surprise Me ✨</button>
+      </div>
+      <textarea id="mainPrompt" [value]="prompt()" (input)="prompt.set($any($event.target).value)" placeholder="A majestic clockwork dragon soaring through a sky of swirling galaxies..." class="w-full h-28 p-4 bg-slate-700 text-slate-200 rounded-lg border-2 border-slate-600 focus:border-blue-500 transition-colors"></textarea>
+      <div class="flex items-center gap-2 mt-2">
+        <label class="text-sm font-medium text-slate-300">Enhance:</label>
+        <button (click)="enhancePrompt('Subtle')" class="px-3 py-1 bg-slate-600 text-xs font-semibold rounded-full hover:bg-slate-500 transition-colors">Subtle</button>
+        <button (click)="enhancePrompt('Artistic')" class="px-3 py-1 bg-slate-600 text-xs font-semibold rounded-full hover:bg-slate-500 transition-colors">Artistic</button>
+        <button (click)="enhancePrompt('Extreme')" class="px-3 py-1 bg-slate-600 text-xs font-semibold rounded-full hover:bg-slate-500 transition-colors">Extreme</button>
+      </div>
+    </div>
+    <!-- Suggestions -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+       <div class="relative w-full">
+            <select (change)="addSuggestion($any($event.target).value); $any($event.target).value = ''" class="w-full appearance-none p-3 bg-slate-700 text-slate-200 rounded-lg border-2 border-slate-600 focus:border-blue-500 transition-colors">
+                <option value="">Add a Style...</option>
+                @for(item of suggestions.Style; track item) { <option [value]="item">{{item}}</option> }
+            </select>
+            <svg class="pointer-events-none absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" /></svg>
+        </div>
+        <div class="relative w-full">
+            <select (change)="addSuggestion($any($event.target).value); $any($event.target).value = ''" class="w-full appearance-none p-3 bg-slate-700 text-slate-200 rounded-lg border-2 border-slate-600 focus:border-blue-500 transition-colors">
+                <option value="">Add a Mood...</option>
+                 @for(item of suggestions.Mood; track item) { <option [value]="item">{{item}}</option> }
+            </select>
+            <svg class="pointer-events-none absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" /></svg>
+        </div>
+    </div>
+    <!-- Settings -->
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-2">
+        <label class="text-sm font-medium text-slate-300">Outputs:</label>
+        <div class="flex items-center gap-1 rounded-lg bg-slate-700 p-1">
+          @for (num of [1, 2, 3, 4]; track num) { <button (click)="numOutputs.set(num)" [class]="'px-3 py-1 text-sm font-bold rounded-md transition-colors ' + (numOutputs() === num ? 'bg-sky-600 text-white' : 'text-slate-300 hover:bg-slate-600')">{{num}}</button> }
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <label class="text-sm font-medium text-slate-300">Aspect Ratio:</label>
+        <div class="flex items-center gap-1 rounded-lg bg-slate-700 p-1">
+            <button (click)="aspectRatio.set('1:1')" [class]="'px-3 py-1 text-sm font-bold rounded-md transition-colors ' + (aspectRatio() === '1:1' ? 'bg-sky-600 text-white' : 'text-slate-300 hover:bg-slate-600')">1:1</button>
+            <button (click)="aspectRatio.set('16:9')" [class]="'px-3 py-1 text-sm font-bold rounded-md transition-colors ' + (aspectRatio() === '16:9' ? 'bg-sky-600 text-white' : 'text-slate-300 hover:bg-slate-600')">16:9</button>
+            <button (click)="aspectRatio.set('9:16')" [class]="'px-3 py-1 text-sm font-bold rounded-md transition-colors ' + (aspectRatio() === '9:16' ? 'bg-sky-600 text-white' : 'text-slate-300 hover:bg-slate-600')">9:16</button>
+        </div>
+      </div>
+    </div>
+    <!-- Generate Button -->
+    <button (click)="handleGenerate()" class="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold rounded-lg transform hover:scale-105 transition-all">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6.364 6.364 0 0 0-6.364 6.364L3 12l3.636 2.636A6.364 6.364 0 0 0 12 21a6.364 6.364 0 0 0 6.364-6.364L21 12l-3.636-2.636A6.364 6.364 0 0 0 12 3z" /><path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" /></svg>
+      Generate Art
+    </button>
+  </div>
+
+  <!-- Output Section -->
+  <div class="w-full aspect-square bg-slate-800/50 p-4 rounded-2xl shadow-lg border border-slate-700 flex items-center justify-center">
+    @if (imageUrls().length > 0) {
+      <div class="grid gap-4 w-full h-full" [class]="imageUrls().length === 1 ? 'grid-cols-1' : 'grid-cols-2'">
+        @for (image of imageUrls(); track image.id; let i = $index) {
+          <div class="relative group w-full h-full">
+            <img [src]="image.url" [alt]="'Generated ' + (i + 1)" class="w-full h-full object-cover rounded-lg"/>
+            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+               <button (click)="selectedImageUrl.set(image.url)" title="View" class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/30 backdrop-blur-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+               <button (click)="handleGenerate(i)" title="Regenerate" class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/30 backdrop-blur-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>
+               <button (click)="downloadImage(image.url)" title="Download" class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/30 backdrop-blur-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (promptSuggestions().length > 0) {
+      <div class="w-full h-full flex flex-col gap-4 p-4 overflow-y-auto rounded-lg">
+        <h2 class="text-xl font-bold text-center text-slate-300">Choose a Concept</h2>
+        @for (concept of promptSuggestions(); track $index) {
+          <div (click)="selectConcept(concept)" class="bg-slate-700 p-4 rounded-lg cursor-pointer hover:bg-slate-600 transition-colors">
+            <h3 class="font-bold text-sky-400">{{ concept.name }}</h3>
+            <p class="text-slate-400 text-sm mt-1">{{ concept.prompt }}</p>
+          </div>
+        }
+      </div>
+    } @else {
+        <div class="text-center text-slate-500">Your generated art will appear here.</div>
+    }
+  </div>
+
+  @if (selectedImageUrl()) {
+    <app-image-modal [imageUrl]="selectedImageUrl()!" (closeModal)="selectedImageUrl.set(null)"></app-image-modal>
+  }
+</div>

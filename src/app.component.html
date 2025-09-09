@@ -1,0 +1,62 @@
+<div class="min-h-screen font-sans text-white p-4 sm:p-6" style="background-image: url('https://www.transparenttextures.com/patterns/crissxcross.png')">
+  <div class="max-w-4xl mx-auto">
+    <header class="text-center mb-4">
+      <h1 class="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-500">MPG Yallah Pix Wirks</h1>
+      <p class="text-slate-400 mt-2">Enhanced AI-powered creative tools for your next hit.</p>
+    </header>
+
+    <nav class="flex justify-center flex-wrap gap-4 sm:gap-6 mb-8 border-b border-slate-700">
+      <a href="#" (click)="$event.preventDefault(); setPage('image')" [class]="'py-3 px-2 font-semibold transition-colors ' + (page() === 'image' ? 'text-sky-400 border-b-2 border-sky-400' : 'text-slate-400 hover:text-sky-400')">Image</a>
+      <a href="#" (click)="$event.preventDefault(); setPage('video')" [class]="'py-3 px-2 font-semibold transition-colors ' + (page() === 'video' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-slate-400 hover:text-purple-400')">Video</a>
+      <a href="#" (click)="$event.preventDefault(); setPage('chat')" [class]="'py-3 px-2 font-semibold transition-colors ' + (page() === 'chat' ? 'text-green-400 border-b-2 border-green-400' : 'text-slate-400 hover:text-green-400')">Chat</a>
+    </nav>
+
+    <app-api-provider-manager 
+      [page]="page()" 
+      [initialProvider]="provider()"
+      (configSaved)="handleConfigSaved($event)">
+    </app-api-provider-manager>
+
+    <div class="relative">
+      @if (error() && !loading()) {
+        <div class="mb-4 animate-fade-in">
+          <app-error-display [message]="error()!"></app-error-display>
+        </div>
+      }
+
+      @if (loading()) {
+        <div class="absolute inset-0 flex items-center justify-center z-10">
+          <app-spinner [text]="loadingMessage()"></app-spinner>
+        </div>
+      }
+
+      <div [class]="loading() ? 'opacity-20 pointer-events-none' : ''">
+        @switch (page()) {
+          @case ('image') {
+            <app-image-generator 
+              [provider]="provider()"
+              [userApiKey]="userApiKey()"
+              (generationStarted)="handleGenerationStarted($event)"
+              (generationComplete)="handleGenerationComplete($event)">
+            </app-image-generator>
+          }
+          @case ('video') {
+            <app-video-generator 
+              [provider]="provider()"
+              [userApiKey]="userApiKey()"
+              (generationStarted)="handleGenerationStarted($event)"
+              (generationComplete)="handleGenerationComplete($event)">
+            </app-video-generator>
+          }
+          @case ('chat') {
+            <!-- Chat component manages its own loading state internally for streaming -->
+            <app-chat 
+              [provider]="provider()"
+              [userApiKey]="userApiKey()">
+            </app-chat>
+          }
+        }
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+<div class="animate-fade-in">
+  <div class="bg-slate-800/50 p-6 rounded-2xl shadow-lg border border-slate-700 mb-8 space-y-6">
+    <div class="flex justify-center bg-slate-700 rounded-lg p-1">
+      <button 
+        (click)="mode.set('text-to-video')" 
+        [disabled]="provider() === 'huggingface_video'"
+        class="w-full py-2 px-4 rounded-md font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+        [class]="mode() === 'text-to-video' ? 'bg-purple-600 text-white' : 'hover:bg-slate-600'">
+        Text-to-Video
+      </button>
+      <button 
+        (click)="mode.set('image-to-video')" 
+        class="w-full py-2 px-4 rounded-md font-semibold transition-colors" 
+        [class]="mode() === 'image-to-video' ? 'bg-purple-600 text-white' : 'hover:bg-slate-600'">
+        Image-to-Video
+      </button>
+    </div>
+
+    @if (mode() === 'image-to-video') {
+        <div class="space-y-4">
+            @if (inputImage()) {
+                <div class="text-center relative group">
+                    <img [src]="inputImage()" alt="Preview" class="rounded-lg max-h-48 mx-auto" />
+                    <button (click)="inputImage.set(null)" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/50 text-white px-4 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                        Remove Image
+                    </button>
+                </div>
+            } @else {
+                <app-image-uploader (imageUploaded)="inputImage.set($event)"></app-image-uploader>
+            }
+            <textarea [value]="prompt()" (input)="prompt.set($any($event.target).value)" placeholder="Add a prompt to animate the image (optional)..." class="w-full h-20 p-4 bg-slate-700 rounded-lg border-2 border-slate-600 focus:border-purple-500"></textarea>
+        </div>
+    } @else {
+      <textarea [value]="prompt()" (input)="prompt.set($any($event.target).value)" placeholder="e.g., A cinematic shot of a futuristic city at sunset..." class="w-full h-28 p-4 bg-slate-700 rounded-lg border-2 border-slate-600 focus:border-purple-500"></textarea>
+    }
+    
+    <button (click)="handleGenerate()" class="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold rounded-lg transform hover:scale-105 transition-all">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><path d="M10 12H2v-2h8v2Z"/></svg>
+      Generate Video
+    </button>
+  </div>
+
+  <div class="w-full aspect-video bg-slate-800/50 p-4 rounded-2xl shadow-lg border border-slate-700 flex items-center justify-center">
+    @if (videoUrls().length > 0) {
+      <video [src]="videoUrls()[0]" controls autoPlay loop class="w-full h-full rounded-lg object-cover"></video>
+    } @else {
+      <div class="text-center text-slate-500">Your generated video will appear here.</div>
+    }
+  </div>
+</div>

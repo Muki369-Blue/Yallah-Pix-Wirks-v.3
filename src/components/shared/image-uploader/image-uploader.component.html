@@ -1,0 +1,13 @@
+<div 
+  class="relative flex flex-col items-center justify-center w-full h-48 rounded-lg border-2 border-dashed transition-colors cursor-pointer"
+  [class]="isDragging() ? 'border-purple-400 bg-purple-900/20' : 'border-slate-600 hover:border-purple-500'"
+  (dragenter)="handleDrag($event, true)"
+  (dragleave)="handleDrag($event, false)"
+  (dragover)="handleDrag($event, true)"
+  (drop)="handleDrop($event)"
+  (click)="fileInput.click()">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+  <p class="mt-2 text-sm text-slate-400">Drag & drop an image, or click to select</p>
+  <input type="file" #fileInput class="hidden" accept="image/*" (change)="onFileSelected($event)" />
+</div>
